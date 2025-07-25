@@ -4,7 +4,7 @@ class Program
 {
     public static void Main()
     {
-        using Game game = new()
+        using Window game = new()
         {
             Width = 600,
             Height = 600,

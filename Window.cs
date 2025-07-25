@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace Snake
 {
-    public class Game : IDisposable
+    public class Window : IDisposable
     {
         public int Width { get; init; }
         public int Height { get; init; }
@@ -12,7 +12,7 @@ namespace Snake
         public Color backgroundColour = new(63, 143, 71);
         private Vector2 position = new(5, 5);
 
-        internal void Run()
+        public void Run()
         {
             Raylib.InitWindow(Width, Height, Title);
 
