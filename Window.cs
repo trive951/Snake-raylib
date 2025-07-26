@@ -9,6 +9,7 @@ namespace Snake
         public int Height { get; init; } = 600;
         public string Title { get; init; } = "";
 
+        private const float delayTime = 0.5f;
         public Color backgroundColour = new(63, 143, 71);
         //private Vector2 position = new(5, 5);
 
@@ -26,20 +27,34 @@ namespace Snake
                 float frameTime = Raylib.GetFrameTime();
                 timeElapsed += frameTime;
 
-                if (timeElapsed >= 1)
+                if (timeElapsed >= delayTime)
                 {
                     //Console.WriteLine("moving");
                     timeElapsed = 0;
-                    game.IncrementPosition();
+                    game.IncrementSnakePosition();
                 }
 
-                (int x, int y) = game.GetFruitPosition();
-
                 DrawSnake(ref game.snakePositions);
-                DrawFruit(x, y);
+                DrawFruit(game.GetFruitPosition());
 
+                // TODO move input handling into its own method
                 if (Raylib.IsKeyPressed(KeyboardKey.R))
+                {
                     game.Reset();
+                    timeElapsed = 0;
+                }
+
+                if (Raylib.IsKeyPressed(KeyboardKey.Up))
+                    game.SetDirection(new(0, -1));
+                if (Raylib.IsKeyPressed(KeyboardKey.Down))
+                    game.SetDirection(new(0, 1));
+                if (Raylib.IsKeyPressed(KeyboardKey.Left))
+                    game.SetDirection(new(-1, 0));
+                if (Raylib.IsKeyPressed(KeyboardKey.Right))
+                    game.SetDirection(new(1, 0));
+
+                if (game.IsEatingFruit())
+                    game.SetFruitPosition(game.SetRandomFruitPosition());
 
                 Raylib.EndDrawing();
             }
@@ -54,9 +69,9 @@ namespace Snake
             }
         }
 
-        static void DrawFruit(int x, int y)
+        static void DrawFruit(Vector2 fruitPosition)
         {
-            Raylib.DrawCircle((int)(x * 60 + 30), (int)(y * 60 + 30), 30, Color.Red);
+            Raylib.DrawCircle((int)(fruitPosition.X * 60 + 30), (int)(fruitPosition.Y * 60 + 30), 30, Color.Red);
         }
 
         void IDisposable.Dispose()
