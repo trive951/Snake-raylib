@@ -15,6 +15,7 @@ namespace Snake
         public void Run()
         {
             var game = new Game();
+            float timeElapsed = 0;
 
             Raylib.InitWindow(Width, Height, Title);
 
@@ -22,12 +23,23 @@ namespace Snake
             {
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(backgroundColour);
+                float frameTime = Raylib.GetFrameTime();
+                timeElapsed += frameTime;
+
+                if (timeElapsed >= 1)
+                {
+                    //Console.WriteLine("moving");
+                    timeElapsed = 0;
+                    game.IncrementPosition();
+                }
+
+                (int x, int y) = game.GetFruitPosition();
 
                 DrawSnake(ref game.snakePositions);
-                DrawFruit(ref game.fruitPosition);
+                DrawFruit(x, y);
 
                 if (Raylib.IsKeyPressed(KeyboardKey.R))
-                    (game.fruitPosition.X, game.fruitPosition.Y) = game.GenFruitPosition();
+                    game.Reset();
 
                 Raylib.EndDrawing();
             }
@@ -42,9 +54,9 @@ namespace Snake
             }
         }
 
-        static void DrawFruit(ref Vector2 fruitPosition)
+        static void DrawFruit(int x, int y)
         {
-            Raylib.DrawCircle((int)(fruitPosition.X * 60 + 30), (int)(fruitPosition.Y * 60 + 30), 30, Color.Red);
+            Raylib.DrawCircle((int)(x * 60 + 30), (int)(y * 60 + 30), 30, Color.Red);
         }
 
         void IDisposable.Dispose()
