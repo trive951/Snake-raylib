@@ -9,7 +9,8 @@ namespace Snake
         public int Height { get; init; } = 600;
         public string Title { get; init; } = "";
 
-        private const float delayTime = 0.5f;
+        const float delayTime = 0.25f;
+        const float colourIncrement = 2.5f / 100;
         public Color backgroundColour = new(63, 143, 71);
         //private Vector2 position = new(5, 5);
 
@@ -29,16 +30,21 @@ namespace Snake
 
                 if (timeElapsed >= delayTime)
                 {
-                    //Console.WriteLine("moving");
                     timeElapsed = 0;
                     game.IncrementSnakePosition();
+
+                    if (game.IsEatingFruit())
+                    {
+                        game.GrowSnake();
+                        game.SetRandomFruitPosition();
+                    }
                 }
 
                 DrawSnake(ref game.snakePositions);
                 DrawFruit(game.GetFruitPosition());
 
                 // TODO move input handling into its own method
-                if (Raylib.IsKeyPressed(KeyboardKey.R))
+                if (Raylib.IsKeyPressed(KeyboardKey.R) || game.DoesSnakeOverlap())
                 {
                     game.Reset();
                     timeElapsed = 0;
@@ -53,19 +59,18 @@ namespace Snake
                 if (Raylib.IsKeyPressed(KeyboardKey.Right))
                     game.SetDirection(new(1, 0));
 
-                if (game.IsEatingFruit())
-                    game.SetFruitPosition(game.SetRandomFruitPosition());
-
                 Raylib.EndDrawing();
             }
         }
 
         static void DrawSnake(ref List<Vector2> snakePositions)
         {
+            float squareColour = 0f;
             foreach (var square in snakePositions)
             {
                 var rec = new Rectangle(square * 60, 60, 60);
-                Raylib.DrawRectangleRounded(rec, .25f, 4, Color.Black);
+                Raylib.DrawRectangleRounded(rec, .25f, 4, new(squareColour, squareColour, squareColour));
+                squareColour += colourIncrement;
             }
         }
 

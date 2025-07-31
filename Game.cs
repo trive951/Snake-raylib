@@ -10,8 +10,11 @@ public class Game
         new(9,9)
         ];
 
-    private Vector2 direction = new(-1, 0);
-    private Vector2 fruitPosition = new();
+    Vector2 direction = new(-1, 0);
+    Vector2 fruitPosition;
+    Vector2 freeSquare;
+    int score;
+
     readonly Random rnd = new();
 
     public Game()
@@ -32,12 +35,13 @@ public class Game
 
     public void Reset()
     {
+        direction = new(-1, 0);
         snakePositions.Clear();
         snakePositions.Add(new(7, 9));
         snakePositions.Add(new(8, 9));
         snakePositions.Add(new(9, 9));
 
-        fruitPosition = SetRandomFruitPosition();
+        SetRandomFruitPosition();
     }
 
     public void IncrementSnakePosition()
@@ -59,6 +63,11 @@ public class Game
 
                 snakePositions[i] = newPos;
             }
+            else if (i == snakePositions.Count - 1)
+            {
+                freeSquare = snakePositions[i];
+                snakePositions[i] = snakePositions[i - 1];
+            }
             else
             {
                 snakePositions[i] = snakePositions[i - 1];
@@ -71,15 +80,18 @@ public class Game
         fruitPosition = newPosition;
     }
 
-    public Vector2 SetRandomFruitPosition()
+    public void SetRandomFruitPosition()
     {
-        int x = rnd.Next(1, 10);
-        int y = rnd.Next(1, 10);
+        int x, y;
 
-        if (DoesFruitOverlap(x, y))
-            return SetRandomFruitPosition();
+        do
+        {
+            x = rnd.Next(1, 10);
+            y = rnd.Next(1, 10);
+        }
+        while (DoesFruitOverlap(x, y));
 
-        return new Vector2(x, y);
+        fruitPosition = new Vector2(x, y);
     }
 
     public bool IsEatingFruit() => snakePositions[0] == fruitPosition;
@@ -94,11 +106,10 @@ public class Game
         return false;
     }
 
-    bool DoesSnakeOverlap()
+    public bool DoesSnakeOverlap() => snakePositions.Count != snakePositions.Distinct().Count();
+
+    public void GrowSnake()
     {
-        return snakePositions.GroupBy(x => x)
-            .Where(g => g.Count() > 1)
-            .Select(y => y.Key)
-            .Any();
+        snakePositions.Add(freeSquare);
     }
 }
