@@ -3,16 +3,15 @@ using System.Numerics;
 
 namespace Snake
 {
-    public class Window : IDisposable
+    public class Window
     {
-        public int Width { get; init; } = 800;
+        public int Width { get; init; } = 600;
         public int Height { get; init; } = 600;
-        public string Title { get; init; } = "";
+        public string Title { get; init; } = "Snake";
 
         const float delayTime = 0.25f;
         const float colourIncrement = 2.5f / 100;
         public Color backgroundColour = new(63, 143, 71);
-        //private Vector2 position = new(5, 5);
 
         public void Run()
         {
@@ -61,6 +60,8 @@ namespace Snake
 
                 Raylib.EndDrawing();
             }
+
+            Raylib.CloseWindow();
         }
 
         static void DrawSnake(ref List<Vector2> snakePositions)
@@ -77,12 +78,6 @@ namespace Snake
         static void DrawFruit(Vector2 fruitPosition)
         {
             Raylib.DrawCircle((int)(fruitPosition.X * 60 + 30), (int)(fruitPosition.Y * 60 + 30), 30, Color.Red);
-        }
-
-        void IDisposable.Dispose()
-        {
-            GC.SuppressFinalize(this);
-            Raylib.CloseWindow();
         }
     }
 }
